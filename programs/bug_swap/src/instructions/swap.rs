@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use tims_nft_mint::{
+use bug_nft_mint::{
     cpi::{accounts::PurchaseContext, purchase},
     program::TimsNftMint,
     AssetManager, Core, Protocol,

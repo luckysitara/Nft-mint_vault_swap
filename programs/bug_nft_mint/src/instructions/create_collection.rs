@@ -2,32 +2,18 @@ use anchor_lang::prelude::*;
 use mpl_core::instructions::CreateCollectionV1CpiBuilder;
 
 use crate::{
-    constants::{SEED_COLLECTION_DATA, SEED_PREFIX}, state::CollectionData, Core, CreateCollectionParams
+    constants::{SEED_COLLECTION_DATA, SEED_PREFIX},
+    state::CollectionData,
+    Core,
+    CreateCollectionParams,
 };
 
-
-/// Create MPL Core collection
-///
-/// ### Accounts:
-///
-/// 1. `[writable, signer]` payer
-/// 2. `[writable, signer]` collection
-/// 3. `[writable]` collection_data
-/// 4. `[]` core program
-/// 5. `[]` `system program`
-///
-/// ### Parameters
-///
-/// 1. params: [CreateCollectionParams]
-///
 #[derive(Accounts)]
 #[instruction(params: CreateCollectionParams)]
 pub struct CreateCollectionContext<'info> {
-    #[account(mut)]
+    #[account(mut), signer]
     pub payer: Signer<'info>,
 
-
-    /// CHECK: This is safe since we are passing this in ourselves
     #[account(mut, signer)]
     pub collection: UncheckedAccount<'info>,
 
@@ -46,30 +32,24 @@ pub struct CreateCollectionContext<'info> {
 }
 
 impl CreateCollectionContext<'_> {
-    /// validation helper for our IX
     pub fn validate(&self) -> Result<()> {
-        return Ok(());
+        // Optional: Add validation logic if needed
+        Ok(())
     }
 
-    /// Mint a collection asset.
-    ///
-    #[access_control(ctx.accounts.validate())]
     pub fn create_collection(
         ctx: Context<CreateCollectionContext>,
         params: CreateCollectionParams,
     ) -> Result<()> {
-
-        // update our collection data
         let collection_data = &mut ctx.accounts.collection_data;
 
-        **collection_data = CollectionData::new(
+        *collection_data = CollectionData::new(
             ctx.bumps.collection_data,
             params.items,
             ctx.accounts.payer.key(),
             ctx.accounts.collection.key(),
         );
 
-        //CPI into mpl_core program and create collection
         CreateCollectionV1CpiBuilder::new(&ctx.accounts.core_program)
             .collection(&ctx.accounts.collection)
             .payer(&ctx.accounts.payer)

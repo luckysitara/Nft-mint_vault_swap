@@ -1,40 +1,25 @@
 use anchor_lang::prelude::*;
 use mpl_core::instructions::CreateV1CpiBuilder;
 
-use crate::{error::CreateErrorCode, state::CollectionData, Core, MintFromColParams};
+use crate::{
+    error::CreateErrorCode,
+    state::CollectionData,
+    Core,
+    MintFromColParams,
+};
 
-
-/// Create MPL Core Asset context
-///
-/// Expects the following accounts:
-/// 1. `[writable, signer]` payer
-/// 2. `[writable, signer]` asset
-/// 3. `[writable]` collection
-/// 4. `[writable]` collection_data
-/// 5. `[]` core program
-/// 6. `[]` `system program`
-///
-/// ### Parameters
-///
-/// 1. params: [MintFromColParams]
-///
+/// Context for minting an MPL Core asset from a collection.
 #[derive(Accounts)]
 #[instruction(params: MintFromColParams)]
 pub struct MintFromCollectionContext<'info> {
     pub payer: Signer<'info>,
 
-    /// CHECK: we are passing this in ourselves
     #[account(mut, signer)]
     pub asset: UncheckedAccount<'info>,
 
-    /// CHECK: we are passing this in ourselves
-    #[account(
-        mut,
-        address = collection_data.collection @CreateErrorCode::PubkeyMismatch
-    )]
+    #[account(mut, address = collection_data.collection @ CreateErrorCode::PubkeyMismatch)]
     pub collection: UncheckedAccount<'info>,
 
-    /// CHECK: we are passing this in ourselves
     #[account(mut)]
     pub collection_data: Account<'info, CollectionData>,
 
@@ -44,21 +29,19 @@ pub struct MintFromCollectionContext<'info> {
 }
 
 impl MintFromCollectionContext<'_> {
-    /// validation helper for our IX
+    /// Validation helper for the minting context.
     pub fn validate(&self) -> Result<()> {
-        // collection contains items to be minted from
+        // Check if collection has items available to mint.
         if self.collection_data.items_available == 0 {
             return Err(error!(CreateErrorCode::CollectionMintedOut));
         }
-
-        return Ok(());
+        Ok(())
     }
 
-    /// CPI into mpl_core program and mint our asset.
-    ///
+    /// CPI into mpl_core program and mint the asset.
     #[access_control(ctx.accounts.validate())]
     pub fn mint_from_collection(
-        ctx: Context<MintFromCollectionContext>,
+        ctx: Context<Self>,
         params: MintFromColParams,
     ) -> Result<()> {
         let collection_data = &mut ctx.accounts.collection_data;
