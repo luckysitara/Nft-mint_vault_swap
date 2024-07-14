@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use bug_nft_mint::{
     cpi::{accounts::PurchaseContext, purchase},
-    program::TimsNftMint,
+    program::BugNftMint,
     AssetManager, Core, Protocol,
 };
 
@@ -47,7 +47,7 @@ pub struct SwapContext<'info> {
 
     pub core_program: Program<'info, Core>,
 
-    pub mint_vault_program: Program<'info, TimsNftMint>,
+    pub mint_vault_program: Program<'info, BugNftMint>,
 
     pub system_program: Program<'info, System>,
 }

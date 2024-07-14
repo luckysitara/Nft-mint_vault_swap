@@ -3,7 +3,7 @@ import { Program } from "@coral-xyz/anchor";
 import {
 	SystemProgram,
 } from "@solana/web3.js";
-import { TimsSwap } from "../target/types/tims_swap";
+import { Bug_Swap } from "../target/types/bug_swap";
 import {
 	asset,
 	collection,
@@ -19,7 +19,7 @@ describe("tim-swap", () => {
 
 	const provider = anchor.getProvider();
 
-	const program = anchor.workspace.TimsSwap as Program<TimsSwap>;
+	const program = anchor.workspace.Bug_Swap as Program<Bug_Swap>;
 
 	it("Swaps tokens for NFTs!", async () => {
 	

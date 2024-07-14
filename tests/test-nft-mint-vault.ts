@@ -3,7 +3,7 @@ import { Program } from "@coral-xyz/anchor";
 import { generateSigner,signerIdentity,sol } from "@metaplex-foundation/umi";
 import { createUmi } from "@metaplex-foundation/umi-bundle-defaults";
 import {  SystemProgram } from "@solana/web3.js";
-import { TimsNftMint } from "../target/types/tims_nft_mint";
+import { Bug_NftMint } from "../target/types/bug_nft_mint";
 import {
 	asset,
 	collection,
@@ -29,7 +29,7 @@ describe("tims-nft-mint-vault", () => {
 	umi.use(mockStorage())
 	umi.rpc.airdrop(umi.identity.publicKey, sol(1000), txConfig.confirm)
 
-	const program = anchor.workspace.TimsNftMint as Program<TimsNftMint>;
+	const program = anchor.workspace.Bug_NftMint as Program<Bug_NftMint>;
 
 
 	it(" Initializes protocol state", async () => {
